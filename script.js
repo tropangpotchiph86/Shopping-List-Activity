@@ -50,22 +50,6 @@ function addItemToDOM(item) {
   itemList.appendChild(li);
 }
 
-function addItemToStorage(item) {
-  let itemsFromStorage;
-
-  if (localStorage.getItem('items') === null) {
-    itemsFromStorage = [];
-  } else {
-    itemsFromStorage = JSON.parse(localStorage.getItem('items'));
-  }
-
-  //Add new item to Array
-  itemsFromStorage.push(item);
-
-  //Convert to JSON string and set to local storage
-  localStorage.setItem('items', JSON.stringify(itemsFromStorage));
-}
-
 function createButton(classes) {
   const button = document.createElement('button');
   button.className = classes;
@@ -88,6 +72,33 @@ function removeItem(e) {
       checkUI();
     }
   }
+}
+function addItemToStorage(item) {
+  const itemsFromStorage = getItemsFromStorage();
+
+  //Add new item to Array
+  itemsFromStorage.push(item);
+
+  //Convert to JSON string and set to local storage
+  localStorage.setItem('items', JSON.stringify(itemsFromStorage));
+}
+
+function getItemsFromStorage() {
+  let itemsFromStorage;
+
+  if (localStorage.getItem('items') === null) {
+    itemsFromStorage = [];
+  } else {
+    itemsFromStorage = JSON.parse(localStorage.getItem('items'));
+  }
+
+  return itemsFromStorage;
+}
+
+function displayItems() {
+  const itemsFromStorage = getItemsFromStorage();
+  itemsFromStorage.forEach((item) => addItemToDOM(item));
+  checkUI();
 }
 
 function clearItems() {
@@ -112,9 +123,17 @@ function filterItems(e) {
   });
 }
 
-//Event Listeners
-itemForm.addEventListener('submit', onAddItemSubmit);
-itemList.addEventListener('click', removeItem);
-clearBtn.addEventListener('click', clearItems);
-itemFilter.addEventListener('input', filterItems);
-checkUI();
+//Initialization
+
+function init() {
+  //Event Listeners
+  itemForm.addEventListener('submit', onAddItemSubmit);
+  itemList.addEventListener('click', removeItem);
+  clearBtn.addEventListener('click', clearItems);
+  itemFilter.addEventListener('input', filterItems);
+  document.addEventListener('DOMContentLoaded', displayItems);
+
+  checkUI();
+}
+
+init();
